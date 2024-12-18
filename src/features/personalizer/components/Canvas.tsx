@@ -1,23 +1,46 @@
-import { useEffect, useRef, useState } from "react";
+"use client";
+import { FC, useEffect, useRef, useState } from "react";
 import { Canvas as FabricCanvas } from "fabric";
 
-const Canvas = () => {
+import { defaultCanvasStyles } from "../constants";
+import { Character } from "../core/core";
+
+const Canvas: FC<{ character: Character }> = ({ character }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvas, setCanvas] = useState<FabricCanvas>();
 
+  // useEffect(() => {
+  //   if (canvasRef.current) {
+  //     const initCanvas = new FabricCanvas(
+  //       canvasRef.current,
+  //       defaultCanvasStyles
+  //     );
+  //     setCanvas(initCanvas);
+  //     initCanvas.add(character);
+
+  //     initCanvas.renderAll();
+  //   }
+
+  //   return () => {
+  //     canvas?.dispose();
+  //   };
+  // }, [canvasRef]);
+
   useEffect(() => {
     if (canvasRef.current) {
-      const initCanvas = new FabricCanvas(canvasRef.current, {
-        width: 400,
-        height: 500,
-        backgroundColor: "#0f172a",
-      });
-      initCanvas.renderAll();
-      setCanvas(initCanvas);
-    }
-  }, [canvasRef]);
+      const canvas = new FabricCanvas(canvasRef.current, defaultCanvasStyles);
+      setCanvas(canvas);
+      canvas.add(character);
 
-  return <canvas ref={canvasRef} />;
+      canvas.renderAll();
+    }
+
+    return () => {
+      canvas?.dispose();
+    };
+  }, [canvasRef, setCanvas]);
+
+  return <canvas className="border" ref={canvasRef} />;
 };
 
 export default Canvas;
